@@ -78,18 +78,37 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp">
 
-                    <View
+                    <FrameLayout
                         android:layout_width="56dp"
                         android:layout_height="56dp"
-                        android:background="@drawable/circle_primary_container" />
+                        android:layout_centerVertical="true">
 
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        <View
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:background="@drawable/circle_primary_container" />
+
+                        <ImageView
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_add_24"
+                            app:tint="@color/onPrimaryContainer" />
+                    </FrameLayout>
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/lottieNewProject"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="14dp"
-                        android:src="@drawable/ic_add_24"
-                        app:tint="@color/onPrimaryContainer" />
+                        android:layout_marginTop="-12dp"
+                        android:layout_marginEnd="-8dp"
+                        android:clickable="false"
+                        android:focusable="false"
+                        app:lottie_rawRes="@raw/anim_new_project"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true" />
                 </RelativeLayout>
 
                 <TextView
@@ -111,67 +130,125 @@
 
             </LinearLayout>
 
-            <!-- Secondary Bento Card: Open Project -->
+            <!-- Saved Projects Section -->
             <LinearLayout
-                android:id="@+id/btnOpenProject"
+                android:id="@+id/layoutSavedProjectsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="150dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_hero_bento_secondary"
-                android:clickable="true"
-                android:focusable="true"
-                android:foreground="?attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:elevation="4dp">
+                android:layout_marginTop="24dp"
+                android:orientation="vertical">
 
+                <!-- Section Header -->
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp">
 
-                    <View
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="@drawable/circle_primary_container" />
-
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginStart="12dp"
-                        android:src="@drawable/ic_folder_24"
-                        app:tint="@color/onPrimaryContainer" />
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Saved Projects"
+                            android:textColor="@color/textColor"
+                            android:textSize="18sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvSavedProjectsCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:background="@drawable/bg_pill_accent"
+                            android:paddingHorizontal="8dp"
+                            android:paddingVertical="2dp"
+                            android:text="0"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif-medium" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnImportProjectFile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:src="@drawable/ic_arrow_up_right_24"
-                        app:tint="@color/iconSecondary"
-                        android:alpha="0.5" />
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="6dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_folder_24"
+                            app:tint="@color/iconSecondary" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:text="Import .lcprj"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="12sp"
+                            android:fontFamily="sans-serif" />
+                    </LinearLayout>
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Saved Projects RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSavedProjects"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Open Project"
-                    android:textColor="@color/textColor"
-                    android:textSize="18sp"
-                    android:fontFamily="sans-serif-medium" />
+                    android:nestedScrollingEnabled="false"
+                    android:visibility="gone" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Empty State Card -->
+                <LinearLayout
+                    android:id="@+id/layoutEmptyProjects"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Load saved .lcprj file to resume editing"
-                    android:textColor="@color/iconSecondary"
-                    android:textSize="13sp"
-                    android:fontFamily="sans-serif"
-                    android:visibility="visible" />
+                    android:minHeight="140dp"
+                    android:background="@drawable/bg_hero_bento_secondary"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:src="@drawable/ic_clips_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="No saved projects yet"
+                        android:textColor="@color/textColor"
+                        android:textSize="15sp"
+                        android:fontFamily="sans-serif-medium" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Create your first video edit above to see it here"
+                        android:textColor="@color/iconSecondary"
+                        android:textSize="12sp"
+                        android:fontFamily="sans-serif" />
+                </LinearLayout>
 
             </LinearLayout>
 

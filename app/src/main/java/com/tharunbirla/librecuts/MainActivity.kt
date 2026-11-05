@@ -22,6 +22,8 @@ import androidx.core.os.LocaleListCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.tharunbirla.librecuts.databinding.ActivityMainBinding
 import com.tharunbirla.librecuts.utils.ErrorCode
+import com.tharunbirla.librecuts.utils.ProjectManager
+import com.tharunbirla.librecuts.utils.SavedProject
 import com.tharunbirla.librecuts.utils.setBounceClickListener
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +52,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private lateinit var projectsAdapter: SavedProjectsAdapter
+    private var savedProjects = mutableListOf<SavedProject>()
+    private var projectToExport: SavedProject? = null
+
     private val openProjectLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
             if (uri != null) {
@@ -60,13 +66,48 @@ class MainActivity : AppCompatActivity() {
                     Log.e("ProjectSelection", "Could not take persistable permission for project URI", e)
                 }
                 Log.d("ProjectSelection", "Project selected: $uri")
-                val intent = Intent(this, ProjectImportActivity::class.java).apply {
-                    putExtra("PROJECT_URI", uri)
-                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val imported = ProjectManager.importExternalProject(this@MainActivity, uri)
+                    withContext(Dispatchers.Main) {
+                        loadSavedProjects()
+                        if (imported != null) {
+                            openSavedProject(imported)
+                        } else {
+                            val intent = Intent(this@MainActivity, ProjectImportActivity::class.java).apply {
+                                putExtra("PROJECT_URI", uri)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                            }
+                            startActivity(intent)
+                        }
+                    }
                 }
-                startActivity(intent)
             } else {
                 Log.e("ProjectSelectionError", "No project selected")
+            }
+        }
+
+    private val exportProjectFileLauncher =
+        registerForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { destUri: Uri? ->
+            val project = projectToExport
+            projectToExport = null
+            if (destUri != null && project != null) {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    try {
+                        contentResolver.openOutputStream(destUri)?.use { out ->
+                            project.file.inputStream().use { input ->
+                                input.copyTo(out)
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            showToast("Project exported successfully")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("ProjectExport", "Failed to export project", e)
+                        withContext(Dispatchers.Main) {
+                            showToast("Failed to export project")
+                        }
+                    }
+                }
             }
         }
 
@@ -134,10 +175,21 @@ class MainActivity : AppCompatActivity() {
             selectVideo()
         }
 
-        binding.btnOpenProject.setBounceClickListener {
-            Log.d("ButtonClick", "Launching project selection.")
+        // Setup Saved Projects RecyclerView
+        projectsAdapter = SavedProjectsAdapter(
+            onProjectClick = { project -> openSavedProject(project) },
+            onOptionsClick = { view, project -> showProjectOptionsMenu(view, project) }
+        )
+        binding.rvSavedProjects.apply {
+            layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this@MainActivity)
+            adapter = projectsAdapter
+        }
+
+        binding.btnImportProjectFile.setOnClickListener {
             openProjectLauncher.launch(arrayOf("*/*"))
         }
+
+        loadSavedProjects()
 
         // Initialize bottom navigation tab backgrounds
         val attrs = intArrayOf(android.R.attr.selectableItemBackgroundBorderless)
@@ -435,6 +487,10 @@ class MainActivity : AppCompatActivity() {
                 binding.tabHome.background = activeBg
                 binding.ivHome.setColorFilter(activeColor)
                 binding.tvHomeLabel.setTextColor(activeColor)
+                if (!binding.lottieNewProject.isAnimating) {
+                    binding.lottieNewProject.playAnimation()
+                }
+                loadSavedProjects()
             }
             1 -> {
                 binding.layoutSettingsContent.visibility = View.VISIBLE
@@ -447,6 +503,136 @@ class MainActivity : AppCompatActivity() {
                 binding.tabAbout.background = activeBg
                 binding.ivAbout.setColorFilter(activeColor)
                 binding.tvAboutLabel.setTextColor(activeColor)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (binding.layoutHomeContent.visibility == View.VISIBLE && !binding.lottieNewProject.isAnimating) {
+            binding.lottieNewProject.playAnimation()
+        }
+        loadSavedProjects()
+    }
+
+    private fun loadSavedProjects() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val list = ProjectManager.loadSavedProjects(this@MainActivity)
+            withContext(Dispatchers.Main) {
+                savedProjects = list.toMutableList()
+                projectsAdapter.updateProjects(savedProjects)
+                binding.tvSavedProjectsCount.text = savedProjects.size.toString()
+                if (savedProjects.isEmpty()) {
+                    binding.rvSavedProjects.visibility = View.GONE
+                    binding.layoutEmptyProjects.visibility = View.VISIBLE
+                } else {
+                    binding.rvSavedProjects.visibility = View.VISIBLE
+                    binding.layoutEmptyProjects.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    private fun openSavedProject(project: SavedProject) {
+        val projectUri = ProjectManager.getProjectUri(this, project)
+        val intent = Intent(this, ProjectImportActivity::class.java).apply {
+            putExtra("PROJECT_URI", projectUri)
+            putExtra("SAVED_PROJECT_ID", project.id)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+        }
+        startActivity(intent)
+    }
+
+    private fun showProjectOptionsMenu(anchor: View, project: SavedProject) {
+        val popup = androidx.appcompat.widget.PopupMenu(this, anchor)
+        popup.menu.add(0, 1, 0, "Rename")
+        popup.menu.add(0, 2, 1, "Duplicate")
+        popup.menu.add(0, 3, 2, "Export .lcprj")
+        popup.menu.add(0, 4, 3, "Delete")
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> showRenameDialog(project)
+                2 -> duplicateProject(project)
+                3 -> {
+                    projectToExport = project
+                    exportProjectFileLauncher.launch("${project.name}.lcprj")
+                }
+                4 -> showDeleteDialog(project)
+            }
+            true
+        }
+        popup.show()
+    }
+
+    private fun showRenameDialog(project: SavedProject) {
+        val input = android.widget.EditText(this).apply {
+            setText(project.name)
+            setSelection(text.length)
+            setTextColor(ContextCompat.getColor(this@MainActivity, R.color.textColor))
+            setHintTextColor(ContextCompat.getColor(this@MainActivity, R.color.iconSecondary))
+            backgroundTintList = ContextCompat.getColorStateList(this@MainActivity, R.color.colorPrimary)
+            setPadding(48, 32, 48, 32)
+        }
+        val container = android.widget.FrameLayout(this).apply {
+            setPadding(48, 16, 48, 16)
+            addView(input)
+        }
+
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Rename Project")
+            .setView(container)
+            .setPositiveButton("Rename") { _, _ ->
+                val newName = input.text.toString().trim()
+                if (newName.isNotBlank() && newName != project.name) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        val success = ProjectManager.renameProject(this@MainActivity, project, newName)
+                        withContext(Dispatchers.Main) {
+                            if (success) {
+                                loadSavedProjects()
+                                showToast("Project renamed")
+                            } else {
+                                showToast("Failed to rename project")
+                            }
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showDeleteDialog(project: SavedProject) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Delete Project?")
+            .setMessage("Are you sure you want to delete '${project.name}'? This cannot be undone.")
+            .setPositiveButton("Delete") { _, _ ->
+                lifecycleScope.launch(Dispatchers.IO) {
+                    val success = ProjectManager.deleteProject(this@MainActivity, project)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            loadSavedProjects()
+                            showToast("Project deleted")
+                        } else {
+                            showToast("Failed to delete project")
+                        }
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun duplicateProject(project: SavedProject) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val dup = ProjectManager.duplicateProject(this@MainActivity, project)
+            withContext(Dispatchers.Main) {
+                if (dup != null) {
+                    loadSavedProjects()
+                    showToast("Project duplicated")
+                } else {
+                    showToast("Failed to duplicate project")
+                }
             }
         }
     }

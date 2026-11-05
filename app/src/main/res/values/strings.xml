@@ -176,4 +176,8 @@
     <string name="str_haptic_feedback">Haptic Feedback</string>
     <string name="str_haptic_enabled_desc">Enabled (In-app vibrations active)</string>
     <string name="str_haptic_disabled_desc">Disabled (In-app vibrations muted)</string>
+    <string name="str_export_complete">Export Complete!</string>
+    <string name="str_tap_to_play_video">Tap video to play</string>
+    <string name="str_play_video">Play Video</string>
+    <string name="str_video_saved_to_gallery">Video saved to Gallery • Tap to play</string>
 </resources>

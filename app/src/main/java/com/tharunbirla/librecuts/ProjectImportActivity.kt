@@ -542,6 +542,10 @@ class ProjectImportActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 val intent = Intent(this@ProjectImportActivity, VideoEditingActivity::class.java).apply {
                     putExtra("PROJECT_URI", projectUri)
+                    val savedId = this@ProjectImportActivity.intent.getStringExtra("SAVED_PROJECT_ID")
+                    if (savedId != null) {
+                        putExtra("SAVED_PROJECT_ID", savedId)
+                    }
                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
                 startActivity(intent)

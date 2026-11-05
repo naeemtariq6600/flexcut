@@ -163,6 +163,8 @@ class VideoEditingActivity : AppCompatActivity() {
     private var videoUri: Uri? = null
     private var videoFileName: String = ""
     private lateinit var tempInputFile: File
+    private var isExportCompleted = false
+    private var exportedVideoUri: Uri? = null
     private var frameExtractionJob: Job? = null
     private var exportJob: Job? = null
     private val activeRenderJobs = mutableListOf<Job>()
@@ -210,11 +212,19 @@ class VideoEditingActivity : AppCompatActivity() {
                 }
                 com.tharunbirla.librecuts.services.ExportService.ACTION_EXPORT_SUCCESS -> {
                     val uri = intent.getStringExtra(com.tharunbirla.librecuts.services.ExportService.EXTRA_SAVED_URI)
-                    viewModel.finishExport()
-                    android.widget.Toast.makeText(this@VideoEditingActivity, R.string.toast_video_exported_to_gallery_succ, android.widget.Toast.LENGTH_LONG).show()
+                    val savedUri = uri?.let { Uri.parse(it) }
+                    if (savedUri != null) {
+                        showExportCompletedModal(savedUri)
+                    } else {
+                        viewModel.finishExport()
+                        android.widget.Toast.makeText(this@VideoEditingActivity, R.string.toast_video_exported_to_gallery_succ, android.widget.Toast.LENGTH_LONG).show()
+                    }
                 }
                 com.tharunbirla.librecuts.services.ExportService.ACTION_EXPORT_FAILURE -> {
                     val error = intent.getStringExtra(com.tharunbirla.librecuts.services.ExportService.EXTRA_ERROR) ?: "Unknown Error"
+                    isExportCompleted = false
+                    exportedVideoUri = null
+                    exportScreen.visibility = View.GONE
                     viewModel.exportError(error)
                     showProErrorDialog(ErrorCode.FFMPEG_EXECUTION_FAILED, error)
                 }
@@ -506,6 +516,62 @@ class VideoEditingActivity : AppCompatActivity() {
         }
     }
 
+    private var currentSavedProjectId: String? = null
+
+    private fun saveProjectToLibrary(shouldFinishAfter: Boolean = false) {
+        val project = viewModel.project.value
+        if (project == null) {
+            Toast.makeText(this, "No project to save", Toast.LENGTH_SHORT).show()
+            if (shouldFinishAfter) finish()
+            return
+        }
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            var thumbBitmap: Bitmap? = null
+            try {
+                val currentPositionMs = player?.currentPosition ?: 0L
+                val retriever = MediaMetadataRetriever()
+                retriever.setDataSource(this@VideoEditingActivity, project.sourceUri)
+                thumbBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    retriever.getScaledFrameAtTime(
+                        currentPositionMs * 1000L,
+                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC,
+                        320,
+                        240
+                    )
+                } else {
+                    retriever.getFrameAtTime(
+                        currentPositionMs * 1000L,
+                        MediaMetadataRetriever.OPTION_CLOSEST_SYNC
+                    )?.let { Bitmap.createScaledBitmap(it, 320, 240, true) }
+                }
+                retriever.release()
+            } catch (e: Exception) {
+                Log.d(TAG, "Could not capture thumbnail frame: ${e.message}")
+            }
+
+            val saved = com.tharunbirla.librecuts.utils.ProjectManager.saveProject(
+                context = this@VideoEditingActivity,
+                project = project,
+                existingProjectId = currentSavedProjectId,
+                thumbnailBitmap = thumbBitmap
+            )
+
+            withContext(Dispatchers.Main) {
+                if (saved != null) {
+                    currentSavedProjectId = saved.id
+                    viewModel.markProjectSaved()
+                    Toast.makeText(this@VideoEditingActivity, "Project saved", Toast.LENGTH_SHORT).show()
+                    if (shouldFinishAfter) {
+                        finish()
+                    }
+                } else {
+                    Toast.makeText(this@VideoEditingActivity, "Failed to save project", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
     private var activeFontSelectionCallback: ((com.tharunbirla.librecuts.utils.FontItem) -> Unit)? = null
 
     private val importFontLauncher = registerForActivityResult(
@@ -565,6 +631,13 @@ class VideoEditingActivity : AppCompatActivity() {
         // Register back-press callback to prompt for quit confirmation
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if (isExportCompleted) {
+                    dismissExportModal()
+                    return
+                }
+                if (viewModel.uiState.value.isExporting) {
+                    return
+                }
                 if (isFullscreenMode) {
                     exitFullscreenMode()
                 } else if (isHandwritingActive) {
@@ -770,6 +843,20 @@ class VideoEditingActivity : AppCompatActivity() {
         exportScreen = findViewById(R.id.exportScreen)
         exportScreen.findViewById<View>(R.id.btnCancelExport)?.setBounceClickListener {
             cancelExport()
+        }
+        exportScreen.findViewById<View>(R.id.layoutExportVideoPreview)?.setBounceClickListener {
+            if (isExportCompleted && exportedVideoUri != null) {
+                playExportedVideo(exportedVideoUri)
+            }
+        }
+        exportScreen.findViewById<View>(R.id.btnPlayExportedVideo)?.setBounceClickListener {
+            playExportedVideo(exportedVideoUri)
+        }
+        exportScreen.findViewById<View>(R.id.btnShareExportedVideo)?.setBounceClickListener {
+            shareExportedVideo(exportedVideoUri)
+        }
+        exportScreen.findViewById<View>(R.id.btnDoneExport)?.setBounceClickListener {
+            dismissExportModal()
         }
         previewLoadingOverlay = findViewById(R.id.previewLoadingOverlay)
         lottieAnimationView = findViewById(R.id.lottieAnimation)
@@ -1997,8 +2084,7 @@ class VideoEditingActivity : AppCompatActivity() {
                 if (uiState.isExporting) {
                     loadingScreen.visibility = View.GONE
                     val progress = uiState.exportProgress
-                    exportScreen.findViewById<TextView>(R.id.tvExportPercentage)?.text = "$progress%"
-                    exportScreen.findViewById<android.widget.ProgressBar>(R.id.exportProgressBar)?.progress = progress
+                    updateExportProgress(progress)
                 } else {
                     val emptyStateVisible = findViewById<View>(R.id.emptyProjectState)?.visibility == View.VISIBLE
                     if (isImportLoading || (!isVideoLoaded && !emptyStateVisible)) {
@@ -2008,7 +2094,8 @@ class VideoEditingActivity : AppCompatActivity() {
                     }
                 }
 
-                exportScreen.visibility = if (uiState.isExporting) View.VISIBLE else View.GONE
+                val shouldShowExport = uiState.isExporting || isExportCompleted
+                exportScreen.visibility = if (shouldShowExport) View.VISIBLE else View.GONE
 
                 if (::btnUndo.isInitialized && ::btnRedo.isInitialized) {
                     val isProjectEmpty = findViewById<View>(R.id.emptyProjectState)?.visibility == View.VISIBLE
@@ -4742,6 +4829,7 @@ class VideoEditingActivity : AppCompatActivity() {
             var concatFile: File? = null
             try {
                 viewModel.startExport()
+                showExportStartingModal()
 
                 val sourceFilePath = tempInputFile.absolutePath
                 val isAudioOnly = viewModel.exportAudioOnly.value
@@ -4907,7 +4995,7 @@ class VideoEditingActivity : AppCompatActivity() {
 
         sheetView.findViewById<View>(R.id.btnSaveProject)?.setBounceClickListener {
             bottomSheetDialog.dismiss()
-            saveProjectLauncher.launch("project.lcprj")
+            saveProjectToLibrary()
         }
 
         bottomSheetDialog.setContentView(sheetView)
@@ -4920,6 +5008,7 @@ class VideoEditingActivity : AppCompatActivity() {
             var customFileUri: Uri? = null
             try {
                 viewModel.startExport()
+                showExportStartingModal()
                 
                 withContext(kotlinx.coroutines.Dispatchers.IO) {
                     val sharedPreferences = getSharedPreferences("librecuts_prefs", Context.MODE_PRIVATE)
@@ -4993,7 +5082,18 @@ class VideoEditingActivity : AppCompatActivity() {
                     
                     withContext(kotlinx.coroutines.Dispatchers.Main) {
                         viewModel.updateExportProgress(100)
-                        viewModel.finishExport()
+                        val finalUri = customFileUri ?: outputFile?.let { file ->
+                            try {
+                                androidx.core.content.FileProvider.getUriForFile(this@VideoEditingActivity, "${packageName}.fileprovider", file)
+                            } catch (e: Exception) {
+                                Uri.fromFile(file)
+                            }
+                        }
+                        if (finalUri != null) {
+                            showExportCompletedModal(finalUri)
+                        } else {
+                            viewModel.finishExport()
+                        }
                         val displayPath = if (customFileUri != null) {
                             "Custom Folder"
                         } else {
@@ -5044,8 +5144,150 @@ class VideoEditingActivity : AppCompatActivity() {
             }
         }
         exportJob?.cancel()
+        isExportCompleted = false
+        exportedVideoUri = null
+        exportScreen.visibility = View.GONE
         viewModel.exportError("Export cancelled")
         Toast.makeText(this, R.string.toast_export_cancelled, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showExportStartingModal() {
+        isExportCompleted = false
+        exportedVideoUri = null
+        exportScreen.visibility = View.VISIBLE
+
+        val isAudioOnly = viewModel.exportAudioOnly.value
+        exportScreen.findViewById<TextView>(R.id.tvExportTitle)?.text =
+            if (isAudioOnly) "Saving Audio…" else getString(R.string.str_saving_video)
+        exportScreen.findViewById<TextView>(R.id.tvExportMessage)?.text =
+            getString(R.string.str_please_don_t_close_the_app)
+
+        val progressIndicator = exportScreen.findViewById<com.google.android.material.progressindicator.CircularProgressIndicator>(R.id.exportProgressIndicator)
+        progressIndicator?.apply {
+            setIndicatorColor(androidx.core.content.ContextCompat.getColor(this@VideoEditingActivity, R.color.colorPrimary))
+            progress = 0
+        }
+
+        exportScreen.findViewById<View>(R.id.layoutExportPercentage)?.visibility = View.VISIBLE
+        exportScreen.findViewById<TextView>(R.id.tvExportPercentage)?.text = "0%"
+
+        exportScreen.findViewById<View>(R.id.layoutExportPlayBadge)?.visibility = View.GONE
+        exportScreen.findViewById<View>(R.id.layoutExportSuccessBadge)?.visibility = View.GONE
+        exportScreen.findViewById<View>(R.id.tvExportCompletionHint)?.visibility = View.GONE
+
+        exportScreen.findViewById<View>(R.id.btnCancelExport)?.visibility = View.VISIBLE
+        exportScreen.findViewById<View>(R.id.layoutExportCompletedActions)?.visibility = View.GONE
+
+        loadExportThumbnail()
+    }
+
+    private fun loadExportThumbnail() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            var thumbBitmap: Bitmap? = null
+            try {
+                val r = MediaMetadataRetriever()
+                if (::tempInputFile.isInitialized && tempInputFile.exists()) {
+                    r.setDataSource(tempInputFile.absolutePath)
+                } else if (videoUri != null) {
+                    r.setDataSource(this@VideoEditingActivity, videoUri!!)
+                }
+                val posUs = (player?.currentPosition ?: 0L) * 1000L
+                thumbBitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    r.getScaledFrameAtTime(posUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC, 360, 360)
+                } else {
+                    r.getFrameAtTime(posUs, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)?.let {
+                        Bitmap.createScaledBitmap(it, 360, 360, true)
+                    }
+                }
+                r.release()
+            } catch (e: Exception) {
+                Log.d(TAG, "Could not capture export thumbnail: ${e.message}")
+            }
+            withContext(Dispatchers.Main) {
+                val iv = exportScreen.findViewById<com.google.android.material.imageview.ShapeableImageView>(R.id.ivExportVideoThumbnail)
+                if (thumbBitmap != null) {
+                    iv?.setImageBitmap(thumbBitmap)
+                } else {
+                    iv?.setImageResource(R.drawable.bg_hero_bento_primary)
+                }
+            }
+        }
+    }
+
+    private fun updateExportProgress(progress: Int) {
+        if (isExportCompleted) return
+        val progressIndicator = exportScreen.findViewById<com.google.android.material.progressindicator.CircularProgressIndicator>(R.id.exportProgressIndicator)
+        progressIndicator?.progress = progress
+        exportScreen.findViewById<TextView>(R.id.tvExportPercentage)?.text = "$progress%"
+    }
+
+    private fun showExportCompletedModal(savedUri: Uri) {
+        isExportCompleted = true
+        exportedVideoUri = savedUri
+        exportScreen.visibility = View.VISIBLE
+
+        val progressIndicator = exportScreen.findViewById<com.google.android.material.progressindicator.CircularProgressIndicator>(R.id.exportProgressIndicator)
+        progressIndicator?.apply {
+            setIndicatorColor(android.graphics.Color.parseColor("#4CAF50"))
+            progress = 100
+        }
+
+        exportScreen.findViewById<TextView>(R.id.tvExportTitle)?.text = getString(R.string.str_export_complete)
+        exportScreen.findViewById<TextView>(R.id.tvExportMessage)?.text = getString(R.string.str_video_saved_to_gallery)
+
+        exportScreen.findViewById<View>(R.id.layoutExportPercentage)?.visibility = View.GONE
+        exportScreen.findViewById<View>(R.id.layoutExportPlayBadge)?.visibility = View.VISIBLE
+        exportScreen.findViewById<View>(R.id.layoutExportSuccessBadge)?.visibility = View.VISIBLE
+        exportScreen.findViewById<View>(R.id.tvExportCompletionHint)?.visibility = View.VISIBLE
+
+        exportScreen.findViewById<View>(R.id.btnCancelExport)?.visibility = View.GONE
+        exportScreen.findViewById<View>(R.id.layoutExportCompletedActions)?.visibility = View.VISIBLE
+
+        exportScreen.performHapticClick()
+    }
+
+    private fun playExportedVideo(uri: Uri?) {
+        if (uri == null) {
+            Toast.makeText(this, "Media not available to play", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            val isAudioOnly = viewModel.exportAudioOnly.value
+            val playIntent = Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(uri, if (isAudioOnly) "audio/*" else "video/*")
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(playIntent, if (isAudioOnly) "Play Audio" else "Play Video"))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to play media: ${e.message}", e)
+            Toast.makeText(this, "Could not open media player", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun shareExportedVideo(uri: Uri?) {
+        if (uri == null) {
+            Toast.makeText(this, "Media not available to share", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            val isAudioOnly = viewModel.exportAudioOnly.value
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                type = if (isAudioOnly) "audio/*" else "video/*"
+                putExtra(Intent.EXTRA_STREAM, uri)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(Intent.createChooser(shareIntent, "Share Media"))
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to share media: ${e.message}", e)
+            Toast.makeText(this, "Could not share media", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun dismissExportModal() {
+        isExportCompleted = false
+        exportedVideoUri = null
+        viewModel.finishExport()
+        exportScreen.visibility = View.GONE
     }
 
     private fun updateExportDirectoryUi(titleView: TextView, pathView: TextView) {
@@ -5084,6 +5326,13 @@ class VideoEditingActivity : AppCompatActivity() {
 
     private fun setupExoPlayer() {
         val projectUri = intent.getParcelableExtra<Uri>("PROJECT_URI")
+        val savedIdExtra = intent.getStringExtra("SAVED_PROJECT_ID")
+        currentSavedProjectId = savedIdExtra ?: projectUri?.let { uri ->
+            val seg = uri.lastPathSegment
+            if (seg != null && seg.endsWith(".lcprj")) {
+                seg.substringAfterLast("/").removeSuffix(".lcprj")
+            } else null
+        }
         if (projectUri != null) {
             try {
                 contentResolver.takePersistableUriPermission(
@@ -6103,8 +6352,12 @@ class VideoEditingActivity : AppCompatActivity() {
             val stretchedTrimEndMs = (item.trimEndMs / item.speed).toLong()
 
             val rv = segmentView.findViewById<RecyclerView>(R.id.segmentFrameRecyclerView)
-            val lm = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
+            val lm = object : LinearLayoutManager(this, RecyclerView.HORIZONTAL, false) {
+                override fun canScrollHorizontally(): Boolean = false
+            }
             rv.layoutManager = lm
+            rv.isClickable = false
+            rv.isFocusable = false
             val frameSpanMs = if (isPhoto) stretchedMaxDurationMs else stretchedDurationMs
             val itemWidth = maxOf(1, ((frameSpanMs * pixelsPerMs) / 15).toInt())
             val adapter = FrameAdapter(emptyList(), itemWidth)
@@ -7946,8 +8199,7 @@ class VideoEditingActivity : AppCompatActivity() {
 
         view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnSaveAndQuit).setBounceClickListener {
             bottomSheet.dismiss()
-            shouldQuitAfterSave = true
-            saveProjectLauncher.launch("project.lcprj")
+            saveProjectToLibrary(shouldFinishAfter = true)
         }
 
         view.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnKeepEditing).setBounceClickListener {

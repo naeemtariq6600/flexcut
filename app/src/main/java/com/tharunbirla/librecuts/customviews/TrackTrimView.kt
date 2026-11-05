@@ -89,6 +89,7 @@ class TrackTrimView @JvmOverloads constructor(
     private var dragTarget = DragTarget.NONE
     private var lastTouchX = 0f
     private var downTouchX = 0f
+    private var downTouchY = 0f
     
     private var handleScaleAnimator: android.animation.ValueAnimator? = null
     private var currentHandleScale = 1.0f
@@ -353,25 +354,41 @@ class TrackTrimView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 lastTouchX = event.x
                 downTouchX = event.x
+                downTouchY = event.y
                 dragTarget = if (isTrimEnabled) {
                     when {
                         event.x >= startX - 30f && event.x <= startX + handleWidth + 30f -> DragTarget.LEFT
                         event.x >= endX - handleWidth - 30f && event.x <= endX + 30f -> DragTarget.RIGHT
-                        event.x > startX + handleWidth && event.x < endX - handleWidth -> DragTarget.CENTER
+                        event.x >= startX && event.x <= endX -> DragTarget.CENTER
                         else -> DragTarget.NONE
                     }
                 } else {
                     if (event.x >= startX && event.x <= endX) DragTarget.CENTER else DragTarget.NONE
                 }
                 isDraggingHandle = isTrimEnabled && (dragTarget == DragTarget.LEFT || dragTarget == DragTarget.RIGHT)
-                if (dragTarget != DragTarget.NONE) {
+
+                val shouldDisallow = if (isMainVideoTrack) {
+                    // On the main video track, only disallow parent intercept when actively dragging trim handles.
+                    // Touching and dragging the video body allows HorizontalScrollView to scroll the timeline!
+                    isDraggingHandle
+                } else {
+                    // On overlay tracks, disallow when trimming handles or when selected and dragging center
+                    isDraggingHandle || (isSelectedTrack && dragTarget == DragTarget.CENTER)
+                }
+
+                if (shouldDisallow) {
                     parent?.requestDisallowInterceptTouchEvent(true)
                     onDragStateChanged?.invoke(true)
                 }
                 return dragTarget != DragTarget.NONE
             }
             MotionEvent.ACTION_MOVE -> {
-                if (!isTrimEnabled) return true
+                if (!isTrimEnabled && !isMainVideoTrack) return true
+                if (isMainVideoTrack && !isDraggingHandle) {
+                    // Dragging on the main video clip body scrolls the parent timeline.
+                    // Let parent HorizontalScrollView intercept the gesture once it exceeds touch slop.
+                    return true
+                }
                 val dx = event.x - lastTouchX
                 val dtMs = (dx * msPerPixel).toLong()
 
@@ -397,12 +414,14 @@ class TrackTrimView @JvmOverloads constructor(
                         }
                     }
                     DragTarget.CENTER -> {
-                        val duration = endTimeMs - startTimeMs
-                        val minCenterStart = 0L
-                        val limit = if (maxDurationMs > 0L) maxDurationMs else videoDurationMs
-                        val maxCenterStart = limit - duration
-                        startTimeMs = (startTimeMs + dtMs).coerceIn(minCenterStart, maxCenterStart.coerceAtLeast(minCenterStart))
-                        endTimeMs = startTimeMs + duration
+                        if (!isMainVideoTrack) {
+                            val duration = endTimeMs - startTimeMs
+                            val minCenterStart = 0L
+                            val limit = if (maxDurationMs > 0L) maxDurationMs else videoDurationMs
+                            val maxCenterStart = limit - duration
+                            startTimeMs = (startTimeMs + dtMs).coerceIn(minCenterStart, maxCenterStart.coerceAtLeast(minCenterStart))
+                            endTimeMs = startTimeMs + duration
+                        }
                     }
                     DragTarget.NONE -> {}
                 }
@@ -415,16 +434,19 @@ class TrackTrimView @JvmOverloads constructor(
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                 if (dragTarget != DragTarget.NONE) {
-                    val wasDrag = Math.abs(event.x - downTouchX) > 10f
-                    if (!isTrimEnabled) {
-                        if (!wasDrag && event.action == MotionEvent.ACTION_UP) {
-                            onTrackClicked?.invoke()
-                        }
-                    } else {
-                        if (!wasDrag && dragTarget == DragTarget.CENTER && event.action == MotionEvent.ACTION_UP) {
-                            onTrackClicked?.invoke()
-                        } else if (wasDrag) {
-                            onTrimChanged?.invoke(startTimeMs, endTimeMs, dragTarget)
+                    val touchSlop = android.view.ViewConfiguration.get(context).scaledTouchSlop
+                    val wasDrag = Math.hypot((event.x - downTouchX).toDouble(), (event.y - downTouchY).toDouble()) > touchSlop
+                    if (event.action == MotionEvent.ACTION_UP) {
+                        if (!wasDrag) {
+                            // Tap to select / unselect
+                            if (!isTrimEnabled || dragTarget == DragTarget.CENTER || !isDraggingHandle) {
+                                onTrackClicked?.invoke()
+                            }
+                        } else {
+                            // Drag completed
+                            if (isDraggingHandle || (!isMainVideoTrack && isSelectedTrack)) {
+                                onTrimChanged?.invoke(startTimeMs, endTimeMs, dragTarget)
+                            }
                         }
                     }
                     dragTarget = DragTarget.NONE
