@@ -174,17 +174,6 @@ class MainActivity : AppCompatActivity() {
             showLanguageDialog()
         }
         
-        binding.btnCheckForUpdates.setBounceClickListener {
-            checkForUpdates()
-        }
-        
-        binding.btnOpenSourceLicenses.setBounceClickListener {
-            com.mikepenz.aboutlibraries.LibsBuilder()
-                .withActivityTitle(getString(R.string.str_open_source_licenses))
-                .withSearchEnabled(true)
-                .start(this)
-        }
-        
         // Initialize Settings UI
         val prefs = getSharedPreferences("librecuts_prefs", MODE_PRIVATE)
         val savedUriString = prefs.getString("export_directory_uri", null)
@@ -210,24 +199,6 @@ class MainActivity : AppCompatActivity() {
 
         updateLanguageUI()
 
-        // Initialize Haptic Feedback preference
-        updateHapticFeedbackUI()
-
-        binding.btnToggleHapticFeedback.setBounceClickListener {
-            val current = prefs.getBoolean("haptic_feedback", true)
-            prefs.edit().putBoolean("haptic_feedback", !current).apply()
-            updateHapticFeedbackUI()
-        }
-
-        // Initialize Fullscreen Editor preference
-        updateFullscreenEditorUI()
-
-        binding.btnToggleFullscreenEditor.setBounceClickListener {
-            val current = prefs.getBoolean("fullscreen_editor", true)
-            prefs.edit().putBoolean("fullscreen_editor", !current).apply()
-            updateFullscreenEditorUI()
-        }
-
         // Initialize Default Encoder preference
         updateEncoderUI()
 
@@ -241,20 +212,6 @@ class MainActivity : AppCompatActivity() {
             binding.tvAboutVersion.text = "v${pInfo.versionName}"
         } catch (e: Exception) {
             binding.tvAboutVersion.text = "v1.0-beta5"
-        }
-
-        // Setup GitHub and Translation button listeners
-        binding.btnStarGithub.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts")
-        }
-        binding.btnTranslate.setBounceClickListener {
-            openUrl("https://hosted.weblate.org/engage/librecuts/")
-        }
-        binding.btnReportBug.setBounceClickListener {
-            openUrl("https://github.com/tharunbirla/LibreCuts/issues")
-        }
-        binding.btnSponsor.setBounceClickListener {
-            openUrl("https://github.com/sponsors/tharunbirla")
         }
 
         // Onboarding / Welcome Dialog
@@ -363,26 +320,6 @@ class MainActivity : AppCompatActivity() {
                 else -> locale?.getDisplayName(locale)?.replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() }
             }
             binding.tvCurrentLanguage.text = name ?: getString(R.string.str_system_default)
-        }
-    }
-
-    private fun updateHapticFeedbackUI() {
-        val prefs = getSharedPreferences("librecuts_prefs", MODE_PRIVATE)
-        val isEnabled = prefs.getBoolean("haptic_feedback", true)
-        binding.tvCurrentHapticFeedback.text = if (isEnabled) {
-            getString(R.string.str_haptic_enabled_desc)
-        } else {
-            getString(R.string.str_haptic_disabled_desc)
-        }
-    }
-
-    private fun updateFullscreenEditorUI() {
-        val prefs = getSharedPreferences("librecuts_prefs", MODE_PRIVATE)
-        val isFullscreen = prefs.getBoolean("fullscreen_editor", true)
-        binding.tvCurrentFullscreenEditor.text = if (isFullscreen) {
-            getString(R.string.str_fullscreen_enabled_desc)
-        } else {
-            getString(R.string.str_fullscreen_disabled_desc)
         }
     }
 
@@ -640,10 +577,5 @@ class MainActivity : AppCompatActivity() {
     private fun showToast(message: String) {
         Log.d("ToastMessage", "Showing toast: $message")
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun checkForUpdates() {
-        showToast("Checking for updates in browser...")
-        openUrl("https://github.com/tharunbirla/LibreCuts/releases/latest")
     }
 }

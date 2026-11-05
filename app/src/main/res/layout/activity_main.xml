@@ -175,25 +175,13 @@
 
             </LinearLayout>
 
-            <!-- App Tagline -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="48dp"
-                android:gravity="center"
-                android:letterSpacing="0.05"
-                android:text="@string/str_free_open_source_nlimitless_cr"
-                android:textColor="@color/colorOnSurface"
-                android:alpha="0.4"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif-light" />
+
 
         </LinearLayout>
 
     </ScrollView>
 
-    <!-- Settings Page Content (Bento Style Layout) -->
+        <!-- Settings Page Content (Bento Style Layout) -->
     <ScrollView
         android:id="@+id/layoutSettingsContent"
         android:layout_width="match_parent"
@@ -222,7 +210,7 @@
                 android:textColor="@color/textColor"
                 android:textSize="24sp" />
 
-            <!-- General Settings Bento Card -->
+            <!-- Preferences Bento Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -235,7 +223,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:text="@string/str_general"
+                    android:text="Preferences"
                     android:textColor="@color/textColor"
                     android:textSize="16sp"
                     android:layout_marginBottom="12dp" />
@@ -245,168 +233,270 @@
                     android:id="@+id/btnChangeLanguage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
+
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_translate_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_app_language"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:id="@+id/tvCurrentLanguage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_system_default"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_app_language"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentLanguage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/str_system_default"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
+            </LinearLayout>
+
+            <!-- Storage & Export Bento Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_hero_bento_secondary"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Storage &amp; Export Folders"
+                    android:textColor="@color/textColor"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp" />
 
                 <!-- Video Export Folder Setting -->
                 <LinearLayout
                     android:id="@+id/btnChangeExportFolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
+
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_folder_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_video_export_folder"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:id="@+id/tvCurrentExportFolder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_default_movies_librecuts"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_video_export_folder"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentExportFolder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/str_default_movies_librecuts"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="13sp"
+                            android:ellipsize="middle"
+                            android:singleLine="true" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
+                    android:layout_marginVertical="6dp" />
 
                 <!-- Audio Export Folder Setting -->
                 <LinearLayout
                     android:id="@+id/btnChangeAudioExportFolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
+
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_audio_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_audio_export_folder"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:id="@+id/tvCurrentAudioExportFolder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_default_music_librecuts"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_audio_export_folder"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentAudioExportFolder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/str_default_music_librecuts"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="13sp"
+                            android:ellipsize="middle"
+                            android:singleLine="true" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
+                    android:layout_marginVertical="6dp" />
 
                 <!-- Snapshot Export Folder Setting -->
                 <LinearLayout
                     android:id="@+id/btnChangeSnapshotExportFolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/str_snapshot_export_folder"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:id="@+id/tvCurrentSnapshotExportFolder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_default_pictures_librecuts"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
-
-                <!-- Haptic Feedback Setting -->
-                <LinearLayout
-                    android:id="@+id/btnToggleHapticFeedback"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/str_haptic_feedback"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
 
-                    <TextView
-                        android:id="@+id/tvCurrentHapticFeedback"
-                        android:layout_width="wrap_content"
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_image_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_haptic_enabled_desc"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_snapshot_export_folder"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:id="@+id/tvCurrentSnapshotExportFolder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/str_default_pictures_librecuts"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="13sp"
+                            android:ellipsize="middle"
+                            android:singleLine="true" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -430,142 +520,62 @@
                     android:textSize="16sp"
                     android:layout_marginBottom="12dp" />
 
-                <!-- Fullscreen Editor Setting -->
-                <LinearLayout
-                    android:id="@+id/btnToggleFullscreenEditor"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="10dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/str_fullscreen_editor"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-
-                    <TextView
-                        android:id="@+id/tvCurrentFullscreenEditor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_fullscreen_enabled_desc"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
-
                 <!-- Default Encoder Setting -->
                 <LinearLayout
                     android:id="@+id/btnChangeDefaultEncoder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
                     android:paddingVertical="10dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/str_default_encoder"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
+                    <FrameLayout
+                        android:layout_width="42dp"
+                        android:layout_height="42dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
 
-                    <TextView
-                        android:id="@+id/tvCurrentDefaultEncoder"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_encoder_hardware"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_bolt_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
 
-            </LinearLayout>
-
-            <!-- System Bento Card -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_hero_bento_secondary"
-                android:orientation="vertical"
-                android:padding="20dp"
-                android:elevation="4dp">
-
-                <!-- Check for Updates Setting -->
-                <LinearLayout
-                    android:id="@+id/btnCheckForUpdates"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@string/str_check_for_updates"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_manually_check_for_the_latest"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
-                </LinearLayout>
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/outlineVariant"
-                    android:layout_marginVertical="4dp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/str_default_encoder"
+                            android:textColor="@color/textColor"
+                            android:textSize="15sp"
+                            android:fontFamily="sans-serif-medium" />
 
-                <!-- Open Source Licenses Setting -->
-                <LinearLayout
-                    android:id="@+id/btnOpenSourceLicenses"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="?attr/selectableItemBackground"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:paddingVertical="10dp">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/str_open_source_licenses"
-                        android:textColor="@color/textColor"
-                        android:textSize="15sp"
-                        android:fontFamily="sans-serif-medium" />
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="@string/str_view_third_party_software_licenses"
-                        android:textColor="@color/iconSecondary"
-                        android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/tvCurrentDefaultEncoder"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/str_encoder_hardware"
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right_24"
+                        app:tint="@color/iconSecondary"
+                        android:alpha="0.4" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -573,7 +583,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- About Page Content (Bento Style Layout) -->
+        <!-- About Page Content (Bento Style Layout) -->
     <ScrollView
         android:id="@+id/layoutAboutContent"
         android:layout_width="match_parent"
@@ -598,35 +608,36 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/bg_hero_bento_primary"
                 android:orientation="vertical"
-                android:padding="24dp"
+                android:padding="28dp"
                 android:gravity="center"
                 android:elevation="8dp">
 
                 <ImageView
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:src="@mipmap/ic_launcher_round" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="14dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="@string/app_name"
                     android:textColor="@color/textColor"
-                    android:textSize="26sp" />
+                    android:textSize="28sp"
+                    android:letterSpacing="0.02" />
 
                 <TextView
                     android:id="@+id/tvAboutVersion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="6dp"
                     android:textColor="@color/colorSecondary"
                     android:textSize="13sp"
                     android:fontFamily="sans-serif-medium"
                     android:background="@drawable/bg_pill_accent"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="4dp" />
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="5dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -639,119 +650,231 @@
                     android:textSize="14sp" />
             </LinearLayout>
 
-            <!-- Support & Community Bento Card -->
+            <!-- Highlights & Features Bento Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_hero_bento_secondary"
                 android:orientation="vertical"
-                android:padding="24dp"
-                android:gravity="center_horizontal"
+                android:padding="20dp"
                 android:elevation="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
-                    android:text="@string/str_support_amp_feedback"
+                    android:text="Core Features"
                     android:textColor="@color/textColor"
-                    android:textSize="18sp" />
+                    android:textSize="16sp"
+                    android:layout_marginBottom="16dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Feature 1: Timeline -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center"
-                    android:text="@string/str_librecuts_is_open_source_help"
-                    android:textColor="@color/iconSecondary"
-                    android:textSize="13sp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnStarGithub"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="20dp"
-                    android:text="@string/str_star_on_github"
-                    android:textColor="@color/onPrimaryContainer"
-                    android:backgroundTint="@color/colorPrimary"
-                    app:cornerRadius="14dp"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-medium"
-                    app:icon="@drawable/ic_star_24"
-                    app:iconTint="@color/onPrimaryContainer"
-                    app:iconGravity="textStart"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnTranslate"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/str_help_translate"
-                    android:textColor="@color/textColor"
-                    android:backgroundTint="@color/surfaceContainerHigh"
-                    app:strokeColor="@color/outline"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="14dp"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-medium"
-                    app:icon="@drawable/ic_translate_24"
-                    app:iconTint="@color/textColor"
-                    app:iconGravity="textStart"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_crop_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnReportBug"
-                    android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/str_report_a_bug"
-                    android:textColor="@color/textColor"
-                    android:backgroundTint="@color/surfaceContainerHigh"
-                    app:strokeColor="@color/outline"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="14dp"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-medium"
-                    app:icon="@drawable/ic_bug_24"
-                    app:iconTint="@color/textColor"
-                    app:iconGravity="textStart"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSponsor"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Precision Video Timeline"
+                            android:textColor="@color/textColor"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Frame-accurate trimming, multi-segment cuts, speed controls and reverse."
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="12sp"
+                            android:lineSpacingMultiplier="1.15" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
                     android:layout_width="match_parent"
-                    android:layout_height="52dp"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/str_sponsor_project"
-                    android:textColor="#ff69b4"
-                    android:backgroundTint="@color/surfaceContainerHigh"
-                    app:strokeColor="#ff69b4"
-                    app:strokeWidth="1dp"
-                    app:cornerRadius="14dp"
-                    android:textSize="14sp"
-                    android:fontFamily="sans-serif-medium"
-                    app:icon="@drawable/ic_heart_24"
-                    app:iconTint="#ff69b4"
-                    app:iconGravity="textStart"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp" />
+                    android:layout_height="1dp"
+                    android:background="@color/outlineVariant"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Feature 2: Hardware Acceleration -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_bolt_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Hardware Accelerated"
+                            android:textColor="@color/textColor"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Lightning-fast GPU-accelerated encoding up to 4K resolution."
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="12sp"
+                            android:lineSpacingMultiplier="1.15" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/outlineVariant"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Feature 3: Overlays & Audio -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_layers_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Multi-Layer Creative Tools"
+                            android:textColor="@color/textColor"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Rich text titles, picture-in-picture, audio mixing and custom drawing."
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="12sp"
+                            android:lineSpacingMultiplier="1.15" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/outlineVariant"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Feature 4: 100% Private -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <FrameLayout
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        android:background="@drawable/bg_setting_icon_tinted"
+                        android:layout_marginEnd="14dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_check_24"
+                            app:tint="@color/colorPrimary" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Zero Watermarks &amp; Offline"
+                            android:textColor="@color/textColor"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif-medium" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Everything renders locally on device. No accounts and no watermark."
+                            android:textColor="@color/iconSecondary"
+                            android:textSize="12sp"
+                            android:lineSpacingMultiplier="1.15" />
+                    </LinearLayout>
+                </LinearLayout>
 
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:alpha="0.4"
-                android:text="@string/str_made_by_tharun_birla"
-                android:textColor="@color/textColor"
-                android:textSize="12sp" />
 
         </LinearLayout>
     </ScrollView>

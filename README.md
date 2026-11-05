@@ -1,12 +1,12 @@
-# LibreCuts
+# FlexCut
 
 <div align="center">
-  <img src="src/images/featureGraphic.png" alt="LibreCuts Banner" width="100%"/>
+  <img src="src/images/featureGraphic.png" alt="FlexCut Banner" width="100%"/>
   <br/>
   <br/>
 
   <a href="https://github.com/sponsors/tharunbirla">
-    <img src="https://img.shields.io/badge/Sponsor_LibreCuts-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" height="35" alt="Sponsor tharunbirla" />
+    <img src="https://img.shields.io/badge/Sponsor_FlexCut-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" height="35" alt="Sponsor tharunbirla" />
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" height="35" alt="License" />
@@ -32,7 +32,7 @@
 
 <br/>
 
-**LibreCuts** is a free, open-source video editor for Android that prioritizes simplicity, efficiency, and privacy. Built for seamless performance, it empowers creators to easily select, edit, and export watermark-free videos locally on their device.
+**FlexCut** is a free, open-source video editor for Android that prioritizes simplicity, efficiency, and privacy. Built for seamless performance, it empowers creators to easily select, edit, and export watermark-free videos locally on their device.
 
 ---
 
@@ -92,9 +92,9 @@ Help resist this gatekeeping and support the movement at [keepandroidopen.org](h
   </table>
 </div>
 
-## 💖 Support LibreCuts
+## 💖 Support FlexCut
 
-LibreCuts is built with passion and provided to the community for free. If this app has helped you create amazing videos, consider supporting its continued development! Your sponsorship helps keep the project alive and growing.
+FlexCut is built with passion and provided to the community for free. If this app has helped you create amazing videos, consider supporting its continued development! Your sponsorship helps keep the project alive and growing.
 
 <div align="center">
   <br/>
@@ -131,7 +131,7 @@ LibreCuts is built with passion and provided to the community for free. If this 
 
 ## 🔒 Permissions
 
-LibreCuts requires the following permissions to function properly:
+FlexCut requires the following permissions to function properly:
 
 - **READ_EXTERNAL_STORAGE**: To read videos from the device.
 - **WRITE_EXTERNAL_STORAGE**: (For older Android versions) To save edited videos.

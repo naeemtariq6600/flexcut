@@ -410,7 +410,7 @@ class FFmpegRenderEngine(private val context: Context) {
 
         val sb = StringBuilder()
         sb.appendLine("==================================================")
-        sb.appendLine("             LIBRECUTS TECHNICAL LOG             ")
+        sb.appendLine("             FLEXCUT TECHNICAL LOG             ")
         sb.appendLine("==================================================")
         sb.appendLine("App Version : $appVersion")
         sb.appendLine("Device      : ${Build.MANUFACTURER} ${Build.MODEL} (Android ${Build.VERSION.RELEASE}, API ${Build.VERSION.SDK_INT})")
