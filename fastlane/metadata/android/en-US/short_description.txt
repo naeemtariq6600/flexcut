@@ -1,1 +1,1 @@
-FlexCut is a free, open-source privacy friendly video editor for Android.
+Powerful video editor with multi-track timeline, subtitles, music & 4K export.

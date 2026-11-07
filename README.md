@@ -16,7 +16,7 @@
   <a href="https://github.com/tharunbirla/LibreCuts/releases/latest">
     <img src="src/images/badges/badge_github.png" alt="Get it on GitHub" height="96" />
   </a>
-  <a href="https://f-droid.org/packages/com.tharunbirla.librecuts/">
+  <a href="https://f-droid.org/packages/com.flexsol.videoeditor/">
     <img src="src/images/badges/badge_fdroid.png" alt="Get it on F-Droid" height="96" />
   </a>
   <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/tharunbirla/LibreCuts">

@@ -1,21 +1,55 @@
-<p>FlexCut is a free and open-source video editor for Android focused on simplicity, performance, and privacy. Edit and export watermark free videos entirely on your device.</p>
+<p>FlexCut is a versatile, privacy-focused video editor designed for creators, vloggers, and video storytellers. With an intuitive multi-track timeline, precision trimming, subtitle synchronization, and audio controls, FlexCut gives you everything you need to craft high-quality videos directly on your device—all without watermarks.</p>
 
-<p><b>Note:</b> FlexCut is currently in beta. You may encounter bugs, instability, or incomplete features as development continues.</p>
+<p>Whether you are creating vertical videos for social feeds, editing travel vlogs, or producing polished widescreen clips, FlexCut offers a complete creative studio in your pocket.</p>
 
-<p><b>Features</b></p>
+<p><b>KEY FEATURES</b></p>
 
+<p><b>Multi-Track Timeline &amp; Precision Editing</b></p>
 <ul>
-<li><b>Trim:</b> Remove unwanted parts from the beginning or end of a video.</li>
-<li><b>Merge:</b> Combine multiple video clips and rearrange them.</li>
-<li><b>Overlays:</b> Add text, images, GIFs, and video overlays.</li>
-<li><b>Subtitles:</b> Import .srt subtitle files and reposition captions in the preview.</li>
-<li><b>Layer Management:</b> Reorder overlay layers.</li>
-<li><b>Audio:</b> Import audio, boost volume up to 200%, or mute the original audio.</li>
-<li><b>Crop:</b> Crop videos to custom aspect ratios.</li>
-<li><b>Transitions:</b> Add smooth transitions between clips.</li>
-<li><b>Speed:</b> Speed up or slow down videos.</li>
-<li><b>Adjust &amp; Filters:</b> Adjust brightness, contrast, saturation, and apply filters.</li>
-<li><b>Reverse:</b> Play videos in reverse.</li>
-<li><b>Timeline Tools:</b> Snap clips, duplicate overlays, and create freeze frames.</li>
-<li><b>Hardware Acceleration:</b> Export videos faster using supported hardware encoders.</li>
+<li><b>Trim and Cut:</b> Remove unwanted sections with frame-accurate timeline scrubbing.</li>
+<li><b>Merge &amp; Rearrange:</b> Combine multiple clips into a continuous story with easy drag-and-drop reordering.</li>
+<li><b>Speed Control:</b> Adjust playback speed for smooth slow-motion or dynamic fast-motion effects.</li>
+<li><b>Transitions:</b> Apply visual scene transitions between clips with live previews.</li>
+<li><b>Reverse &amp; Freeze Frame:</b> Reverse video playback or freeze standout moments with a single tap.</li>
 </ul>
+
+<p><b>Audio, Music &amp; Voiceover</b></p>
+<ul>
+<li><b>Add Music &amp; SFX:</b> Import custom audio tracks and background songs to match your video rhythm.</li>
+<li><b>Voiceover Recording:</b> Record narration directly over your timeline.</li>
+<li><b>Audio Tuning:</b> Boost volume up to 200%, mute original camera audio, and apply smooth fades.</li>
+<li><b>Audio MP3 Export:</b> Save and export standalone audio mixes from your video projects.</li>
+</ul>
+
+<p><b>Subtitles &amp; Custom Typography</b></p>
+<ul>
+<li><b>SRT Subtitle Import:</b> Import standard .srt subtitle files with automatic timecode alignment.</li>
+<li><b>Interactive Captions:</b> Resize and position subtitles directly on the video preview with touch controls.</li>
+<li><b>Text Overlays:</b> Add stylized titles and text layers with support for custom .ttf and .otf font files.</li>
+</ul>
+
+<p><b>Creative Overlays, Green Screen &amp; Doodle</b></p>
+<ul>
+<li><b>Layer Management:</b> Stack videos, images, stickers, and GIFs with multi-layer picture-in-picture (PIP).</li>
+<li><b>Chroma Key:</b> Remove background colors for green-screen compositing.</li>
+<li><b>Keyframe Animations &amp; Masking:</b> Animate overlay movement across the screen and apply custom mask shapes.</li>
+<li><b>Freehand Drawing &amp; Doodle:</b> Draw directly on video frames with customizable stroke widths and vibrant color palettes.</li>
+</ul>
+
+<p><b>Canvas &amp; Social Aspect Ratios</b></p>
+<ul>
+<li><b>Platform Presets:</b> Switch between 9:16 (vertical format), 16:9 (widescreen), 1:1 (square), or custom aspect ratios.</li>
+<li><b>Canvas Backgrounds:</b> Add blurred background padding or custom solid colors when videos do not match the frame.</li>
+</ul>
+
+<p><b>Hardware-Accelerated Export</b></p>
+<ul>
+<li><b>High Resolution:</b> Export videos in custom resolutions up to 4K Ultra HD.</li>
+<li><b>Smooth Framerates:</b> Choose output frame rates from 24, 25, 30, 50, up to 60 FPS.</li>
+<li><b>Fast Rendering:</b> Built with hardware-accelerated video encoding for rapid, efficient processing.</li>
+<li><b>No Watermarks:</b> Clean exports without forced branding or watermarks.</li>
+<li><b>Project Save:</b> Save editable project files (.lcprj) to pause and resume editing anytime.</li>
+</ul>
+
+<p><b>Privacy-Focused by Design</b></p>
+<p>FlexCut processes your media locally on your device. Your videos, photos, and audio files remain private and are never uploaded to external servers. No account creation or registration required.</p>
