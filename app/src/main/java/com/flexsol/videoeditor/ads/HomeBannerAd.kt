@@ -26,9 +26,19 @@ class HomeBannerAd(
     fun load() {
         if (loadStarted) return
         loadStarted = true
+        reserveSpace()
         container.post {
             if (adView != null) return@post
             createAndLoad()
+        }
+    }
+
+    private fun reserveSpace() {
+        val params = container.layoutParams
+        params.height = anchoredAdaptiveSize().getHeightInPixels(activity)
+        container.layoutParams = params
+        if (container.visibility != View.VISIBLE) {
+            container.visibility = View.INVISIBLE
         }
     }
 
@@ -45,7 +55,7 @@ class HomeBannerAd(
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     Log.w(TAG, "Home banner failed to load: ${error.code} ${error.message}")
                     loaded = false
-                    container.visibility = View.GONE
+                    container.visibility = View.INVISIBLE
                 }
             }
         }
@@ -85,26 +95,24 @@ class HomeBannerAd(
         adView = null
         loaded = false
         container.removeAllViews()
-        container.visibility = View.GONE
+        container.visibility = View.INVISIBLE
     }
 
     private fun applyVisibility() {
-        val show = loaded && homeVisible
-        container.visibility = if (show) View.VISIBLE else View.GONE
+        container.visibility = if (loaded && homeVisible) View.VISIBLE else View.INVISIBLE
     }
 
     private fun anchoredAdaptiveSize(): AdSize {
         val metrics = activity.resources.displayMetrics
-        val parent = container.parent as? View
-        val widthPx = parent?.width?.takeIf { it > 0 }
-            ?: (metrics.widthPixels - parent.horizontalPadding()).coerceAtLeast(1)
+        val parentWidth = (container.parent as? View)?.width ?: 0
+        val widthPx = if (parentWidth > 0) {
+            parentWidth
+        } else {
+            val horizontalInset = (40 * metrics.density).toInt()
+            (metrics.widthPixels - horizontalInset).coerceAtLeast(1)
+        }
         val adWidth = (widthPx / metrics.density).toInt().coerceAtLeast(1)
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, adWidth)
-    }
-
-    private fun View?.horizontalPadding(): Int {
-        if (this == null) return 0
-        return paddingLeft + paddingRight
     }
 
     private companion object {

@@ -131,21 +131,22 @@
 
             </LinearLayout>
 
-            <!-- In-content banner. Kept out of the bottom navigation so taps on Home, Settings, and About cannot land on the ad. -->
+            <!-- Space for the banner is reserved up front so the saved-projects block does not jump when the ad loads. -->
             <FrameLayout
                 android:id="@+id/adBannerContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="28dp"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone" />
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:minHeight="50dp"
+                android:visibility="invisible" />
 
             <!-- Saved Projects Section -->
             <LinearLayout
                 android:id="@+id/layoutSavedProjectsSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="0dp"
                 android:orientation="vertical">
 
                 <!-- Section Header -->
