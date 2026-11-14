@@ -45,9 +45,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/layoutTopHeader"
+        android:layout_above="@id/bottomNavBar"
         android:paddingHorizontal="20dp"
         android:paddingTop="12dp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="16dp"
         android:clipToPadding="false"
         android:overScrollMode="never"
         android:scrollbars="none"
@@ -129,6 +130,15 @@
                     android:fontFamily="sans-serif" />
 
             </LinearLayout>
+
+            <!-- In-content banner. Kept out of the bottom navigation so taps on Home, Settings, and About cannot land on the ad. -->
+            <FrameLayout
+                android:id="@+id/adBannerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone" />
 
             <!-- Saved Projects Section -->
             <LinearLayout

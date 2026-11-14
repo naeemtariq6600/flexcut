@@ -20,6 +20,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.flexsol.videoeditor.ads.HomeBannerAd
 import com.flexsol.videoeditor.databinding.ActivityMainBinding
 import com.flexsol.videoeditor.utils.ErrorCode
 import com.flexsol.videoeditor.utils.ProjectManager
@@ -53,8 +54,10 @@ class MainActivity : AppCompatActivity() {
         }
 
     private lateinit var projectsAdapter: SavedProjectsAdapter
+    private lateinit var homeBannerAd: HomeBannerAd
     private var savedProjects = mutableListOf<SavedProject>()
     private var projectToExport: SavedProject? = null
+    private var currentTab = 0
 
     private val openProjectLauncher =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
@@ -190,6 +193,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         loadSavedProjects()
+        setupHomeBanner()
 
         // Initialize bottom navigation tab backgrounds
         val attrs = intArrayOf(android.R.attr.selectableItemBackgroundBorderless)
@@ -458,6 +462,7 @@ class MainActivity : AppCompatActivity() {
 
         val activeColor = ContextCompat.getColor(this, R.color.colorPrimary)
         val inactiveColor = ContextCompat.getColor(this, R.color.inactiveTool)
+        currentTab = tabIndex
 
         // Reset all tabs to inactive
         binding.layoutHomeContent.visibility = View.GONE
@@ -500,6 +505,9 @@ class MainActivity : AppCompatActivity() {
                 binding.tvAboutLabel.setTextColor(activeColor)
             }
         }
+        if (::homeBannerAd.isInitialized) {
+            homeBannerAd.setHomeVisible(tabIndex == 0)
+        }
     }
 
     override fun onResume() {
@@ -507,7 +515,29 @@ class MainActivity : AppCompatActivity() {
         if (binding.layoutHomeContent.visibility == View.VISIBLE && !binding.lottieNewProject.isAnimating) {
             binding.lottieNewProject.playAnimation()
         }
+        if (::homeBannerAd.isInitialized && currentTab == 0) {
+            homeBannerAd.resume()
+        }
         loadSavedProjects()
+    }
+
+    override fun onPause() {
+        if (::homeBannerAd.isInitialized) {
+            homeBannerAd.pause()
+        }
+        super.onPause()
+    }
+
+    override fun onDestroy() {
+        if (::homeBannerAd.isInitialized) {
+            homeBannerAd.destroy()
+        }
+        super.onDestroy()
+    }
+
+    private fun setupHomeBanner() {
+        homeBannerAd = HomeBannerAd(this, binding.adBannerContainer)
+        homeBannerAd.load()
     }
 
     private fun loadSavedProjects() {

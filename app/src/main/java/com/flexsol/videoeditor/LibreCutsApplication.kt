@@ -3,12 +3,21 @@ package com.flexsol.videoeditor
 import android.app.Application
 import android.content.Intent
 import android.util.Log
+import com.flexsol.videoeditor.ads.AdMobConfig
 import com.flexsol.videoeditor.utils.ErrorCode
+import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.RequestConfiguration
 
 class LibreCutsApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         setupGlobalCrashHandler()
+        MobileAds.setRequestConfiguration(
+            RequestConfiguration.Builder()
+                .setTestDeviceIds(listOf(AdMobConfig.TEST_DEVICE_ID))
+                .build()
+        )
+        MobileAds.initialize(this)
     }
 
     private fun setupGlobalCrashHandler() {
